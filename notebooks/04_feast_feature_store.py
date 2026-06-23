@@ -26,6 +26,8 @@ REPO_ROOT = Path(_setup.__file__).resolve().parent.parent
 FEAST_DIR = REPO_ROOT / "app" / "feast_repo"
 FEAST_DATA = FEAST_DIR / "data"
 FEAST_DATA.mkdir(exist_ok=True)
+import sys
+FEAST_BIN = str(Path(sys.executable).parent / "feast")
 
 # %% [markdown]
 # ## 1. Sinh dữ liệu offline (Parquet) cho 3 feature views
@@ -84,7 +86,7 @@ for p in sorted(FEAST_DATA.glob("*.parquet")):
 
 # %%
 res = subprocess.run(
-    ["feast", "apply"],
+    [FEAST_BIN, "apply"],
     cwd=str(FEAST_DIR),
     capture_output=True, text=True, check=False,
 )
@@ -104,7 +106,7 @@ assert res.returncode == 0, f"feast apply failed: {res.stderr}"
 # %%
 end_dt = NOW.strftime("%Y-%m-%dT%H:%M:%S")
 res = subprocess.run(
-    ["feast", "materialize-incremental", end_dt],
+    [FEAST_BIN, "materialize-incremental", end_dt],
     cwd=str(FEAST_DIR),
     capture_output=True, text=True, check=False,
 )
